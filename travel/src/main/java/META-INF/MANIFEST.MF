@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Main-Class: 
+Class-Path: jackson-databind-2.3.3.jar spring-core-4.1.2.RELEASE.jar jac
+ kson-annotations-2.3.3.jar spring-tx-4.1.2.RELEASE.jar spring-jdbc-4.1.
+ 2.RELEASE.jar mysql-connector-java-5.1.26.jar commons-logging-1.1.1.jar
+  java-sdk-4.10.0.jar druid-1.0.9.jar commons-beanutils-1.9.2.jar javax.
+ mail-1.5.3.jar activation-1.1.jar tools.jar json-20180813.jar commons-c
+ ollections-3.2.1.jar commons-pool2-2.3.jar log4j-1.2.17.jar aliyun-java
+ -sdk-dysmsapi-1.1.0.jar jackson-core-2.3.3.jar javax.mail-api-1.5.6.jar
+  jconsole.jar jedis-2.7.0.jar spring-beans-4.1.2.RELEASE.jar aliyun-jav
+ a-sdk-core-3.7.1.jar
+

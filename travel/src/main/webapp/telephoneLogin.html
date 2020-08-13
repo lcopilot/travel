@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--网站图标-->
+  <link rel="shortcut icon" href="img/icons8-旅行者徽章-16.png"/>
+  <title>黑马旅游网-登录</title>
+  <link rel="stylesheet" type="text/css" href="css/common.css">
+  <link rel="stylesheet" type="text/css" href="css/login.css">
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <!--导入angularJS文件-->
+  <script src="js/angular.min.js"></script>
+  <!--导入jquery-->
+  <script src="js/jquery-3.3.1.js"></script>
+  <script>
+    //校验手机号
+    function checkTelephone() {
+      //获取手机
+      var telephone = $("#telephone").val();
+      //手机号正则
+      var reg_telephone = /^1[34578]\d{9}$/;
+      var flag = reg_telephone.test(telephone);
+      if (flag) {
+        //手机号格式正确
+        $("#telephone").css("border", "");
+        $("#errorMsg").html("");
+        $("#smsCheck").css("color", "#51a0f0");
+        $("#smsCheck").css("background-color", "#e8f5fd");
+        $("#smsCheck").attr('disabled', false);
+      } else {
+        //手机号格式不正确
+        $("#telephone").css("border", "1px solid red");
+        $("#errorMsg").html(" 手机号格式错误,请输入正确的手机号");
+        $("#smsCheck").css("color", "");
+        $("#smsCheck").css("background-color", "");
+        $("#smsCheck").attr('disabled', true);
+
+      }
+      return flag;
+    }
+
+    //60秒倒计时
+    var wait = 60;
+
+    function time() {
+      if (wait == 0) {
+        $("#smsCheck").val("获取验证码");
+        $("#smsCheck").attr('disabled', false);
+        wait = 60;
+      } else {
+        $("#smsCheck").css("color", "");
+        $("#smsCheck").css("background-color", "");
+        $("#smsCheck").attr('disabled', true);
+        $("#smsCheck").val("重新发送(" + wait + ")");
+        wait--;
+        setTimeout(function () {
+              time()
+            },
+            1000)
+      }
+    }
+
+    //发送验证码
+    function sendSmsCheck() {
+      if (checkTelephone) {
+        //倒计时
+        time();
+        $.post("user/sendLoginSms", {telephone: $("#telephone").val()}, function (data) {
+          var errorMsg = data.errorMsg;
+          if (data.flag) {
+            //发送成功
+            $("#errorMsg").html(errorMsg);
+            $("#errorMsg").css("color", "#51a0f0");
+          } else {
+            //发送失败,给errorMsg添加提示信息
+            $("#errorMsg").css("color", "red");
+            $("#errorMsg").html(errorMsg);
+          }
+        });
+      }
+
+    }
+
+    //校验短信验证码
+    function smsCheck() {
+      //获取验证码
+      var check = $("#smsCheckCode").val();
+      var flag = check.length != 0;
+      if (flag) {
+        //不为空
+        $("#smsCheckCode").css("border", "");
+        $("#errorMsg").html("");
+      } else {
+        //为空
+        $("#smsCheckCode").css("border", "1px solid red");
+        $("#errorMsg").html(" 验证码不能为空");
+      }
+      return flag;
+    }
+
+    $(function () {
+      $("#telephone").blur(checkTelephone);
+      $("#smsCheck").click(sendSmsCheck);
+      $("#btn_sub").click(function () {
+        if (smsCheck() && checkTelephone()) {
+          $.post("user/smsLoginCheck",
+              {telephone: $("#telephone").val(), smsCode: $("#smsCheckCode").val()},
+              function (data) {
+                if (data.flag) {
+                  //验证码正确
+                  location.href = "index.html";
+                } else {
+                  $("#errorMsg").css("color", "red");
+                  $("#errorMsg").html(data.errorMsg);
+                }
+              });
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+<!--引入头部-->
+<div id="header"></div>
+<!-- 头部 end -->
+<section id="login_wrap">
+  <div class="fullscreen-bg" style="background: url(images/login_bg.png);height: 532px;">
+
+  </div>
+  <div class="login-box">
+    <div class="title">
+      <img src="images/login_logo.png" alt="">
+      <span>欢迎登录黑马旅游账户</span>
+    </div>
+    <div class="login_inner">
+
+      <!--登录错误提示消息-->
+      <div id="errorMsg" class="alert alert-danger"></div>
+      <form id="loginForm" action="" accept-charset="utf-8">
+        <input type="hidden" name="action" value="login"/>
+        <input name="username" type="text" placeholder="请输入手机号" id="telephone">
+        <div class="verify">
+          <input name="check" type="text" id="smsCheckCode" placeholder="请输入验证码" autocomplete="off">
+          <input type="button" id="smsCheck"
+                 style="width: 110px;text-align:center;height: 40px;font-size: 14px;border-radius: 4px;disabled:disabled;"
+                 value="获取验证码">
+        </div>
+        <br><br><br>
+        <div class="submit_telephone">
+          <button type="button" id="btn_sub">登录</button>
+        </div>
+      </form>
+      <div class="reg"><a href="login.html">返回</a></div>
+    </div>
+  </div>
+</section>
+<!--引入尾部-->
+<div id="footer"></div>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="js/jquery-1.11.0.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+<!--导入布局js，共享header和footer-->
+<script type="text/javascript" src="js/include.js"></script>
+</body>
+
+</html>
